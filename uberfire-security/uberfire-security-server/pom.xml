@@ -69,6 +69,13 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>javax.security.jacc</groupId>
+      <artifactId>javax.security.jacc-api</artifactId>
+      <version>1.4</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
