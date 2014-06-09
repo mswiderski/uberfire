@@ -20,12 +20,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.enterprise.inject.Alternative;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
 import org.uberfire.security.ResourceManager;
 import org.uberfire.security.Role;
+import org.uberfire.security.RolesRegistry;
 import org.uberfire.security.SecurityContext;
 import org.uberfire.security.Subject;
 import org.uberfire.security.auth.AuthenticatedStorageProvider;
@@ -152,6 +154,16 @@ public class HttpAuthenticationManager implements AuthenticationManager {
 
         for ( final RoleProvider roleProvider : roleProviders ) {
             roles.addAll( roleProvider.loadRoles( principal ) );
+        }
+
+        // process registered roles that might be already present in the subject
+        // but at the same time they might be not available directly from registry due
+        // being mapped on application server level
+        Set<Role> registeredRoles = RolesRegistry.get().getRegisteredRoles();
+        for (Role role : registeredRoles) {
+            if (!roles.contains(role) && httpContext.getRequest().isUserInRole(role.getName())) {
+                roles.add(role);
+            }
         }
 
         final Map<String, String> properties = new HashMap<String, String>();
